@@ -1,4 +1,4 @@
-package com.islab.rootdetection
+package com.islab.rootbeer
 
 import org.junit.Test
 

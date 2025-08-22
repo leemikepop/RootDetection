@@ -1,4 +1,4 @@
-package com.islab.rootdetection
+package com.islab.rootbeer
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.islab.rootdetection", appContext.packageName)
+        assertEquals("com.islab.rootbeer", appContext.packageName)
     }
 }
