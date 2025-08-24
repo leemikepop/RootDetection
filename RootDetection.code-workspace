@@ -1,10 +1,15 @@
 {
-    "folders": [
+	"folders": [
 		{
 			"path": "."
 		},
 		{
 			"path": "../rootbeer/app/src/main/java/com/scottyab/rootbeer/sample"
 		}
-	]
+	],
+	"settings": {
+		"terminal.integrated.env.windows": {
+			"JAVA_HOME": "C:\\Program Files\\Android\\Android Studio\\jbr"
+		}
+	}
 }
