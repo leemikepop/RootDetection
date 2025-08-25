@@ -18,3 +18,4 @@ local.properties
 package-lock.json
 play-integrity-sa-key.json
 /backend/*/dist
+google-services.json
