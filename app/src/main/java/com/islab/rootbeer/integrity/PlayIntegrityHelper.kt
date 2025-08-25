@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.play.core.integrity.IntegrityManager
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.islab.rootbeer.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -19,13 +20,12 @@ class PlayIntegrityHelper(private val context: Context) {
 
     /**
      * 取得加密的 integrity token。
-     * nonce：請使用後端生成（帶簽名/時間戳）更安全；此處僅示範。
      */
     suspend fun requestIntegrityToken(nonce: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val request = IntegrityTokenRequest.builder()
-                .setNonce(nonce)
-                .build()
+            val requestBuilder = IntegrityTokenRequest.builder().setNonce(nonce)
+            requestBuilder.setCloudProjectNumber(BuildConfig.CLOUD_PROJECT_NUMBER)
+            val request = requestBuilder.build()
             val response = integrityManager.requestIntegrityToken(request).await()
             Result.success(response.token())
         } catch (e: Exception) {

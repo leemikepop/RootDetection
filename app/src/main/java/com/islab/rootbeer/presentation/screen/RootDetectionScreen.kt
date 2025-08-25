@@ -2,7 +2,13 @@ package com.islab.rootbeer.presentation.screen
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,17 +25,24 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.islab.rootbeer.presentation.viewmodel.RootSecurityViewModel
 
@@ -45,6 +58,9 @@ fun RootDetectionScreen(modifier: Modifier = Modifier, vm: RootSecurityViewModel
     val uiState by vm.uiState.collectAsState()
 
     LaunchedEffect(Unit) { vm.runRootChecks() }
+
+    var showIntegrityJson by remember { mutableStateOf(false) }
+    val integrityJsonScroll = rememberScrollState()
 
     Card(
         modifier = modifier
@@ -85,12 +101,12 @@ fun RootDetectionScreen(modifier: Modifier = Modifier, vm: RootSecurityViewModel
                     )
                     Spacer(Modifier.height(8.dp))
                     Text("觸發的檢測項目數：${triggeredChecks.size}")
-                    if (triggeredChecks.isNotEmpty()) {
-                        Spacer(Modifier.height(8.dp))
-                        triggeredChecks.forEach { name ->
-                            Text("• $name", style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
+                    // if (triggeredChecks.isNotEmpty()) {
+                    //     Spacer(Modifier.height(8.dp))
+                    //     triggeredChecks.forEach { name ->
+                    //         Text("• $name", style = MaterialTheme.typography.bodySmall)
+                    //     }
+                    // }
                 }
 
                 rooted == false -> {
@@ -108,18 +124,52 @@ fun RootDetectionScreen(modifier: Modifier = Modifier, vm: RootSecurityViewModel
             }
 
             Spacer(Modifier.height(12.dp))
-            Button(onClick = { vm.requestIntegrity() }, enabled = !uiState.integrityLoading) {
-                Text(if (uiState.integrityLoading) "取得中..." else "取得 Play Integrity Token")
+            Button(onClick = { vm.decodeIntegrity(packageName = "com.islab.rootbeer") }, enabled = !uiState.integrityLoading) {
+                Text(if (uiState.integrityLoading) "驗證中..." else "Play Integrity")
             }
 
-            uiState.integrityToken?.let { tk ->
-                Spacer(Modifier.height(8.dp))
-                Text("Token (encrypted, send to server):", style = MaterialTheme.typography.bodySmall)
-                Text(tk.take(120) + if (tk.length > 120) "..." else "", style = MaterialTheme.typography.bodySmall)
+            // uiState.integrityToken?.let { tk ->
+            //     Spacer(Modifier.height(8.dp))
+            //     Text("Token (encrypted snippet):", style = MaterialTheme.typography.bodySmall)
+            //     Text(tk.take(80) + if (tk.length > 80) "..." else "", style = MaterialTheme.typography.bodySmall)
+            // }
+            uiState.decoded?.let { json ->
+                Spacer(Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Play Integrity 驗證結果", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { showIntegrityJson = !showIntegrityJson }) {
+                        Text(if (showIntegrityJson) "收合" else "展開")
+                    }
+                }
+                if (showIntegrityJson) {
+                    Spacer(Modifier.height(4.dp))
+                    androidx.compose.foundation.layout.Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 140.dp, max = 240.dp)
+                            .verticalScroll(integrityJsonScroll)
+                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = json,
+                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                            overflow = TextOverflow.Clip
+                        )
+                    }
+                }
             }
             uiState.integrityError?.let { err ->
                 Spacer(Modifier.height(8.dp))
                 Text("Integrity 失敗: $err", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                if ("App is not found" in err) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "可能原因: 1) 尚未從 Play 渠道安裝 (目前是 side-load) 2) 服務帳戶未授權該 App 3) 包名/Cloud project 不一致 4) 剛發布仍在 Play 處理。",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
 
             if (!uiState.rootLoading && subChecks.isNotEmpty()) {

@@ -13,19 +13,26 @@ android {
         applicationId = "com.islab.rootbeer"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
+        versionCode = 2
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("long", "CLOUD_PROJECT_NUMBER", "1098928988440L")
+        buildConfigField("String", "BASE_API_URL", "\"http://140.114.235.48:5179\"")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 正式建議改成 https endpoint
+            buildConfigField("String", "BASE_API_URL", "\"http://140.114.235.48:5179\"")
+        }
+        debug {
+            buildConfigField("String", "BASE_API_URL", "\"http://140.114.235.48:5179\"")
         }
     }
     compileOptions {
@@ -62,6 +69,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    
+    // OkHttp for local-server communication
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

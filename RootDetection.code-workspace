@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../rootbeer/app/src/main/java/com/scottyab/rootbeer/sample"
 		}
 	],
 	"settings": {
