@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -176,7 +176,7 @@ fun RootDetectionScreen(modifier: Modifier = Modifier, vm: RootSecurityViewModel
                 Spacer(Modifier.height(32.dp))
                 Text("檢測細項 (觸發 ${triggeredChecks.size}/${subChecks.size})", style = MaterialTheme.typography.titleSmall)
                 Spacer(Modifier.height(8.dp))
-                Divider()
+                HorizontalDivider()
                 Spacer(Modifier.height(8.dp))
                 LazyColumn(Modifier.weight(1f, fill = false)) {
                     items(subChecks) { item ->
@@ -192,7 +192,7 @@ fun RootDetectionScreen(modifier: Modifier = Modifier, vm: RootSecurityViewModel
                                 }
                             }
                         }
-                        Divider()
+                        HorizontalDivider()
                     }
                 }
             }

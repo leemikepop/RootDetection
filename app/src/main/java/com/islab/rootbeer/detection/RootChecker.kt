@@ -32,8 +32,8 @@ class RootChecker(private val context: Context) {
 
         val triggered = subChecks.filter { it.detected }.map { it.description }
 
-        // RootBeer 原有的彙總布林值 (isRooted / isRootedWithoutBusyBoxCheck)
-        val rootedAggregate = rootBeer.isRooted || rootBeer.isRootedWithoutBusyBoxCheck
+        // RootBeer 原有的主判斷布林值 (isRooted)。過去還有 isRootedWithoutBusyBoxCheck 已被標記 deprecated，改由我們的細項結果自行判斷。
+        val rootedAggregate = rootBeer.isRooted
 
         return RootCheckResult(
             rooted = rootedAggregate || triggered.isNotEmpty(),
